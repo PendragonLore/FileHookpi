@@ -149,7 +149,7 @@ class MainWindow(QMainWindow):
     @staticmethod
     def clean_text(line):
         cleaned = re.sub(
-            r"\[%([pe])\]|\[color.+?(?=\])\]|\[margin.+?(?=\])\]|\[ruby-base\]|\[ruby-text-start\]"
+            r"\[%([pe])\]|\[(margin|color|evaluate expr).+?(?=\])\]|\[(ruby-base|center)\]|\[ruby-text-start\]"
             r".*\[ruby-text-end\]",
             "", line
         ).replace("③⑤", "-").replace("[...]", "…")
