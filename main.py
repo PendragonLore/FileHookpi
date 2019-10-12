@@ -6,7 +6,7 @@ import struct
 import sys
 import uuid
 
-from PySide2.QtCore import QFile, QFileDevice, QTextStream, Qt
+from PySide2.QtCore import QFile, QFileDevice, QTextStream, Qt, QByteArray
 from PySide2.QtWidgets import QApplication, QWidget, QVBoxLayout, QCheckBox, QPushButton, QFileDialog, QTextEdit
 from PySide2.QtWidgets import QMainWindow, QMessageBox
 
@@ -72,12 +72,21 @@ class MainWindow(QMainWindow):
         if self.file is None or self.stream is None:
             return QMessageBox.warning(self, "Cannot save file", "No file currently open.")
 
-        file_name = f"filehook_{uuid.uuid4().hex}.save"
+        saves_folder = os.path.expanduser("~/FileHookSaves")
+        if not os.path.exists(saves_folder):
+            try:
+                os.mkdir(saves_folder)
+            except OSError as e:
+                return QMessageBox.critical(self, "Failed to create saves directory", str(e))
+
+        file_name = f"{saves_folder}/filehook_{uuid.uuid4().hex}.save"
 
         if os.path.exists(file_name):
             return QMessageBox.critical(self, "Cannot save file", f"File {os.path.abspath(file_name)} already exists.")
 
-        with open(file_name, "wb") as f:
+        f = QFile(file_name)
+        f.open(QFileDevice.WriteOnly)
+        try:
             # hack so when it's loaded it's actually on the current line instead of the next
             # also avoids negative seeking lol
             text = self.blue_sky_text if self.blue_sky_text is not None else self.text_line.toPlainText()
@@ -88,11 +97,15 @@ class MainWindow(QMainWindow):
                 # but it does so :'
                 last_pos -= 1
 
-            f.write(self.SAVE_STRUCT.pack(last_pos))
-            f.write(b"\x00")
-            f.write(self.file.fileName().encode())
+            f.write(QByteArray(self.SAVE_STRUCT.pack(last_pos)))
+            f.write(QByteArray(b"\x00"))
+            f.write(QByteArray(self.file.fileName().encode()))
+        except Exception as e:
+            return QMessageBox.critical(self, "Failed to save", str(e))
+        finally:
+            f.close()
 
-        QMessageBox.information(self, "Succesfully saved", f"Saved at {os.path.abspath(f.name)}")
+        QMessageBox.information(self, "Succesfully saved", f"Saved at {file_name}")
 
     def load_file(self):
         dialog = QFileDialog(filter="TextHook save (*.save)")
