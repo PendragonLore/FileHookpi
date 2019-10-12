@@ -6,7 +6,7 @@ import struct
 import sys
 import uuid
 
-from PySide2.QtCore import QFile, QFileDevice, QTextStream
+from PySide2.QtCore import QFile, QFileDevice, QTextStream, Qt
 from PySide2.QtWidgets import QApplication, QWidget, QVBoxLayout, QCheckBox, QPushButton, QFileDialog, QTextEdit
 from PySide2.QtWidgets import QMainWindow, QMessageBox
 
@@ -27,6 +27,9 @@ class MainWindow(QMainWindow):
         # keep this for saving
         self.blue_sky_text = None
 
+        self.window_on_top_button = QCheckBox("Leave window on top")
+        self.window_on_top_button.clicked.connect(self.window_on_top)
+
         text_button = QPushButton("Next line")
         text_button.clicked.connect(self.advance_line)
 
@@ -39,6 +42,7 @@ class MainWindow(QMainWindow):
 
         layout = QVBoxLayout()
         layout.addWidget(self.blue_sky_mode)
+        layout.addWidget(self.window_on_top_button)
         layout.addWidget(text_button)
         layout.addWidget(self.text_line)
 
@@ -48,6 +52,10 @@ class MainWindow(QMainWindow):
         self.setAcceptDrops(True)
 
     SAVE_STRUCT = struct.Struct(">q")
+
+    def window_on_top(self):
+        self.setWindowFlag(Qt.WindowStaysOnTopHint, self.window_on_top_button.isChecked())
+        self.show()
 
     def dragEnterEvent(self, event):
         if event.mimeData().urls():
