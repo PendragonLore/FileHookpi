@@ -7,6 +7,10 @@ from PySide2.QtWidgets import (
 
 from .file_menu import FileMenu
 
+__all__ = [
+    "MainWindow"
+]
+
 
 class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):

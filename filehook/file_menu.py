@@ -2,6 +2,10 @@
 
 from PySide2.QtWidgets import QMenu, QAction
 
+__all__ = [
+    "FileMenu"
+]
+
 
 class FileMenu(QMenu):
     ACTION_MAPPING = (
