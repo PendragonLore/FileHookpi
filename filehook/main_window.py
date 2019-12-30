@@ -130,6 +130,7 @@ class MainWindow(QMainWindow):
 
         self.text_box.clear()
         self.line_count = 0
+        self.line_counter.clear()
         self.setWindowFilePath("")
 
     def dragEnterEvent(self, event):
