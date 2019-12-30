@@ -51,4 +51,17 @@ jobs:
         asset_path: ./dist/FileHookPi.exe
         asset_name: FileHookPi.exe
         asset_content_type: application/vnd.microsoft.portable-executable
+    - name: Create MacOS DMG
+      if: matrix.os == 'macos-latest'
+      run: hdiutil create ./dist/FileHookPi.dmg -ov -volname "FileHookPi" -fs HFS+ -srcfolder ./dist/FileHookPi.app
     - name: Upload MacOS ZIP
+      if: matrix.os == 'macos-latest'
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./dist/FileHookPi.dmg
+        asset_name: FileHookPi.dmg
+        asset_content_type: application/octet-stream
+
