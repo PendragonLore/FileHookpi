@@ -35,18 +35,6 @@ jobs:
         pip install pyinstaller
         pyinstaller FileHookPi.spec
 
-    - name: Create Release
-      if: matrix.os == 'macos-latest' # Create the release only once
-      id: create_release
-      uses: actions/create-release@v1.0.0
-      env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: false
-        prerelease: false
-
     - name: Upload Windows EXE
       if: matrix.os == 'windows-latest'
       id: upload-release-asset
@@ -54,7 +42,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        upload_url: https://uploads.github.com/repos/PendragonLore/FileHookpi/releases/${{ github.ref }}/assets
         asset_path: ./dist/FileHookPi.exe
         asset_name: FileHookPi.exe
         asset_content_type: application/vnd.microsoft.portable-executable
@@ -69,7 +57,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        upload_url: https://uploads.github.com/repos/PendragonLore/FileHookpi/releases/${{ github.ref }}/assets
         asset_path: ./dist/FileHookPi.dmg
         asset_name: FileHookPi.dmg
         asset_content_type: application/x-apple-diskimage
